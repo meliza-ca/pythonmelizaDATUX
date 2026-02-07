@@ -86,7 +86,7 @@ def getMenu(conn:Connection):
                 #random_element = random.choice(tipo_usuario)   
                 WelcomeUser(login['user'],emailService)
                 if type_user == "admin":
-                    getMenuAdmin()
+                    getMenuAdmin(conn)
                 elif type_user == "ventas":
                     getMenuSale()
 
@@ -99,7 +99,7 @@ def getMenu(conn:Connection):
                 console.print("\n[bold green]¡Hasta luego![/bold green]")
                 break
 
-def getMenuAdmin():
+def getMenuAdmin(conn):
     """Menú para administradores"""
     while True:
         console.clear()
