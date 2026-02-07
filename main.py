@@ -40,12 +40,40 @@ import random
 from usuarios.userservices import Login,WelcomeUser
 from sqlite3 import Connection
 from config.email import EmailService
-from servicios.inmobiliario_service import InmobiliarioService
 console = Console()
 config = ConfigBd()
 conn = config.bd
 emailService = EmailService()
 
+def inicializar_tablas(conn):
+    """Crea las tablas necesarias si no existen"""
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS propiedades (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                tipo TEXT NOT NULL,
+                direccion TEXT NOT NULL,
+                precio REAL NOT NULL,
+                habitaciones INTEGER DEFAULT 0,
+                banios INTEGER DEFAULT 0,
+                metros_cuadrados REAL NOT NULL,
+                descripcion TEXT,
+                propietario_id INTEGER NOT NULL,
+                fecha_creacion DATETIME NOT NULL,
+                estado TEXT DEFAULT 'disponible'
+            )
+        """)
+        
+        conn.commit()
+        print("Tablas inicializadas correctamente")
+    except Exception as e:
+        print(f"Error inicializando tablas: {e}")
+
+inicializar_tablas(conn)
+
+from servicios.inmobiliario_service import InmobiliarioService
 def getMenu(conn:Connection):
     """Menú principal con login y salir"""
     titulo_figlet = pyfiglet.figlet_format("SISTEMA INMOBILIARIO DATUX", font="slant")
