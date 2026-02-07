@@ -98,9 +98,11 @@ def getMenu(conn:Connection):
             if Confirm.ask("\n¿Está seguro que desea salir?"):
                 console.print("\n[bold green]¡Hasta luego![/bold green]")
                 break
-
 def getMenuAdmin(conn):
     """Menú para administradores"""
+    from servicios.usuario_service import UsuarioService
+    usuario_service = UsuarioService(conn)
+    
     while True:
         console.clear()
         admin_panel = Panel(
@@ -127,10 +129,43 @@ def getMenuAdmin(conn):
         if opcion == "0":
             console.print("\n[yellow]Cerrando sesión...[/yellow]")
             break
+        elif opcion == "1":
+            # SUBMENÚ DE GESTIÓN DE USUARIOS
+            while True:
+                console.clear()
+                console.print("[bold cyan]════════════════════════════════[/bold cyan]")
+                console.print("[bold yellow]  GESTIÓN DE USUARIOS  [/bold yellow]")
+                console.print("[bold cyan]════════════════════════════════[/bold cyan]\n")
+                
+                from rich.table import Table
+                sub_table = Table(box=box.ROUNDED)
+                sub_table.add_column("Opción", style="cyan")
+                sub_table.add_column("Acción", style="white")
+                
+                sub_table.add_row("1", "Agregar nuevo usuario")
+                sub_table.add_row("2", "Listar usuarios")
+                sub_table.add_row("3", "Buscar usuario")
+                sub_table.add_row("0", "Volver al menú principal")
+                
+                console.print(sub_table)
+                
+                sub_opcion = Prompt.ask("Seleccione una opción", choices=["0", "1", "2", "3"])
+                
+                if sub_opcion == "0":
+                    break
+                elif sub_opcion == "1":
+                    usuario_service.agregar_usuario()
+                    console.input("\nPresione Enter para continuar...")
+                elif sub_opcion == "2":
+                    usuario_service.listar_usuarios()
+                    console.input("\nPresione Enter para continuar...")
+                elif sub_opcion == "3":
+                    console.print("\n[bold blue]Búsqueda de usuarios (pendiente)[/bold blue]")
+                    console.input("Presione Enter para continuar...")
         else:
             console.print(f"\n[bold blue]Función pendiente de implementar: Opción {opcion}[/bold blue]")
             console.input("Presione Enter para continuar...")
-            pass
+
 
 def getMenuSale():
     """Menú para personal de ventas"""
