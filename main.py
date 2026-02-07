@@ -1,4 +1,3 @@
-@@ -1,146 +1,174 @@
 # Realiza un menu interactivo para el sistema inmobiliario usando Rich
 # libreria rich y pyfiglet
 # Agregar usuarios
@@ -41,6 +40,7 @@ import random
 from usuarios.userservices import Login,WelcomeUser
 from sqlite3 import Connection
 from config.email import EmailService
+from servicios.inmobiliario_service import InmobiliarioService
 console = Console()
 config = ConfigBd()
 conn = config.bd
@@ -98,10 +98,14 @@ def getMenu(conn:Connection):
             if Confirm.ask("\n¿Está seguro que desea salir?"):
                 console.print("\n[bold green]¡Hasta luego![/bold green]")
                 break
+
 def getMenuAdmin(conn):
     """Menú para administradores"""
     from servicios.usuario_service import UsuarioService
     usuario_service = UsuarioService(conn)
+    
+    # Inicializar servicio inmobiliario
+    inmobiliario_service = InmobiliarioService(conn)
     
     while True:
         console.clear()
@@ -162,6 +166,50 @@ def getMenuAdmin(conn):
                 elif sub_opcion == "3":
                     console.print("\n[bold blue]Búsqueda de usuarios (pendiente)[/bold blue]")
                     console.input("Presione Enter para continuar...")
+        elif opcion == "2":
+            # SUBMENÚ DE GESTIÓN DE PROPIEDADES INMOBILIARIAS
+            while True:
+                console.clear()
+                console.print("[bold cyan]══════════════════════════════════════════[/bold cyan]")
+                console.print("[bold yellow]  GESTIÓN DE PROPIEDADES INMOBILIARIAS  [/bold yellow]")
+                console.print("[bold cyan]══════════════════════════════════════════[/bold cyan]\n")
+                
+                sub_table = Table(box=box.ROUNDED)
+                sub_table.add_column("Opción", style="cyan")
+                sub_table.add_column("Acción", style="white")
+                
+                sub_table.add_row("1", "Agregar nueva propiedad")
+                sub_table.add_row("2", "Listar todas las propiedades")
+                sub_table.add_row("3", "Buscar propiedad por ID")
+                sub_table.add_row("4", "Actualizar propiedad")
+                sub_table.add_row("5", "Eliminar propiedad")
+                sub_table.add_row("6", "Ver propiedades por propietario")
+                sub_table.add_row("0", "Volver al menú principal")
+                
+                console.print(sub_table)
+                
+                sub_opcion = Prompt.ask("Seleccione una opción", choices=["0", "1", "2", "3", "4", "5", "6"])
+                
+                if sub_opcion == "0":
+                    break
+                elif sub_opcion == "1":
+                    inmobiliario_service.agregar_propiedad()
+                    console.input("\nPresione Enter para continuar...")
+                elif sub_opcion == "2":
+                    inmobiliario_service.listar_propiedades()
+                    console.input("\nPresione Enter para continuar...")
+                elif sub_opcion == "3":
+                    inmobiliario_service.buscar_propiedad_por_id()
+                    console.input("\nPresione Enter para continuar...")
+                elif sub_opcion == "4":
+                    inmobiliario_service.actualizar_propiedad()
+                    console.input("\nPresione Enter para continuar...")
+                elif sub_opcion == "5":
+                    inmobiliario_service.eliminar_propiedad()
+                    console.input("\nPresione Enter para continuar...")
+                elif sub_opcion == "6":
+                    inmobiliario_service.propiedades_por_propietario()
+                    console.input("\nPresione Enter para continuar...")
         else:
             console.print(f"\n[bold blue]Función pendiente de implementar: Opción {opcion}[/bold blue]")
             console.input("Presione Enter para continuar...")
